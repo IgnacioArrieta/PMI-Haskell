@@ -57,6 +57,7 @@ cantidadEspecialidad esp_c list = foldr f 0 list
 --cantidadEspecialidad "Plomero" [(1998, "Albert Wesker", "Cientifico", Atendido), (1342, "Lucia Santiago Romero", "Contador", Cancelado)]
 --cantidadEspecialidad "Abogado" [(2342, "Phoenix Wright", "Abogado", Cancelado), (9283, "Apollo Justice", "Abogado", Pendiente)]
 
+
 --Funcion 4:
 atenderTurno :: Int -> [Turno] -> Either String [Turno]
 atenderTurno n _ | n < 0  = Left "No existe la posicion en la lista"
@@ -67,6 +68,16 @@ atenderTurno 0 ((num, pac, esp, est):xs)
   |est == Cancelado = Left "El turno esta Cancelado"
   |otherwise = Left "El turno tiene valores extraños"
 atenderTurno n (t : xs) = fmap (t :) (atenderTurno (n - 1) xs)
+--Casos de prueba funcion 4:
+--atenderTurno 0 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Cancelado)]
+--atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Pendiente)]
+--atenderTurno 0 [(1998, "Albert Wesker", "Cientifico", Atendido)]
+--atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Cancelado)]
+--atenderTurno 5 [(1991, "Guybrush Threepwood", "Inspector", Pendiente)]
+--atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente)]
+--atenderTurno (-1) [(1991, "Guybrush Threepwood", "Inspector", Pendiente)]
+--atenderTurno 0 []
+
 
 --Funcion 5:
 foldArbol :: (a -> b -> b -> b) -> b -> Arbol a -> b
@@ -83,6 +94,15 @@ cantidadPendiente a = foldArbol f 0 a
   where
     f (_,_,_,est) i d = (if est == Pendiente then 1 else 0) + i + d 
 
+--Casos de prueba funcion 5:
+--cantidadTotal (Nodo (2001, "Roberto Martez", "Biologo", Cancelado) (Nodo (1991, "Guybrush Threepwood", "Inspector", Pendiente) Vacio Vacio) (Nodo (9283, "Apollo Justice", "Abogado", Pendiente) Vacio Vacio))
+--cantidadPendiente (Nodo (2001, "Roberto Martez", "Biologo", Cancelado) (Nodo (1991, "Guybrush Threepwood", "Inspector", Pendiente) Vacio Vacio) (Nodo (9283, "Apollo Justice", "Abogado", Pendiente) Vacio Vacio))
+--cantidadTotal Vacio
+--cantidadPendiente Vacio
+--cantidadTotal (Nodo (1998, "Albert Wesker", "Cientifico", Atendido) Vacio Vacio)
+--cantidadPendiente (Nodo (1998, "Albert Wesker", "Cientifico", Atendido) Vacio Vacio)
+
+
 --Funcion 6:
 foldrTurnos :: [Turno] -> (Int, Int, Int)
 foldrTurnos lista = foldr f (0, 0, 0) lista 
@@ -91,3 +111,9 @@ foldrTurnos lista = foldr f (0, 0, 0) lista
       |est == Pendiente = (pen+1,ate,can) 
       |est == Atendido = (pen,ate+1,can)
       |est == Cancelado = (pen,ate,can+1)
+
+--Casos de prueba funcion 6:
+--foldrTurnos [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Atendido), (9283, "Apollo Justice", "Abogado", Pendiente), (2342, "Phoenix Wright", "Abogado", Cancelado)]
+--foldrTurnos []
+--foldrTurnos [(1998, "Albert Wesker", "Cientifico", Atendido), (1342, "Lucia Santiago Romero", "Contador", Atendido)]
+--foldrTurnos [(2342, "Phoenix Wright", "Abogado", Cancelado)]
