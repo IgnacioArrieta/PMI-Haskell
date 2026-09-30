@@ -58,3 +58,46 @@ cantidadEspecialidad esp_c list = foldr f 0 list
 --cantidadEspecialidad "Abogado" [(2342, "Phoenix Wright", "Abogado", Cancelado), (9283, "Apollo Justice", "Abogado", Pendiente)]
 
 --Funcion 4:
+atenderTurno :: Int -> [Turno] -> Either String [Turno]
+atenderTurno x [] = Left "Turno inexistente."
+atenderTurno x ((num, nombr, esp, est):xs)
+ |x == num =  
+  case est of
+   Atendido  -> Left "Este turno ya esta atendido."
+   Cancelado -> Left "Este turno fue cancelado."
+   Pendiente -> Right ((num, nombr, esp, Atendido) : xs)
+  |otherwise = 
+   case atenderTurno x xs of
+    Left mensj -> Left mensj
+    Right list -> Right ((num, nombr, esp, est) : list)
+
+
+--Funcion 5:
+foldArbol :: (a->b->b->b) -> b -> Arbol a -> b
+foldArbol f a Vacio = a
+foldArbol f a (Nodo valor izq der) = f valor (foldArbol f a izq) (foldArbol f a der)
+
+--Para calcular la cantidad total...
+
+cantTotal :: Arbol Turno -> Int
+cantTotal arbol = foldArbol f 0 arbol where
+ f a b c = b + 1 + c
+
+--Para calcular la cantidad de pendientes...
+cantPend :: Arbol Turno -> Int
+cantPend arbol = foldArbol f 0 arbol where
+ f (_,_,_,est) b c 
+  |est == Pendiente = 1 + c + b
+  |otherwise = c + b
+
+
+--Funcion 6: 
+
+--Para calcular la cantidad de turnos pendientes...
+
+cantEst :: [Turno] -> (Int, Int, Int)
+cantEst list = foldr f (0,0,0) list where
+ f (_,_,_,est) (pend, aten, canc)
+  |est == Pendiente = (pend + 1, aten, canc) 
+  |est == Atendido = (pend, aten + 1, canc)
+  |otherwise = (pend, aten, canc + 1)
