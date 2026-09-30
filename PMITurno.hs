@@ -60,21 +60,22 @@ cantidadEspecialidad esp_c list = foldr f 0 list
 
 --Funcion 4:
 atenderTurno :: Int -> [Turno] -> Either String [Turno]
-atenderTurno n _ | n < 0  = Left "No existe la posicion en la lista"
 atenderTurno _ [] = Left "No existe el turno"
-atenderTurno 0 ((num, pac, esp, est):xs)
-  |est == Pendiente = Right ((num, pac, esp, Atendido) : xs)
-  |est == Atendido = Left "El turno ya se Atendio"
-  |est == Cancelado = Left "El turno esta Cancelado"
-  |otherwise = Left "El turno tiene valores extraños"
-atenderTurno n (t : xs) = fmap (t :) (atenderTurno (n - 1) xs)
+atenderTurno n (x@(num, pac, esp, est):xs)
+  |num == n =
+    case est of
+     Pendiente -> Right ((num, pac, esp, Atendido) : xs)
+     Atendido -> Left "El turno ya se Atendio"
+     Cancelado -> Left "El turno esta Cancelado"
+  |otherwise = fmap (x:) (atenderTurno n xs)
+
 --Casos de prueba funcion 4:
---atenderTurno 0 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Cancelado)]
---atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Pendiente)]
---atenderTurno 0 [(1998, "Albert Wesker", "Cientifico", Atendido)]
---atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Cancelado)]
+--atenderTurno 1991 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Cancelado)]
+--atenderTurno 2001 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Pendiente)]
+--atenderTurno 1998 [(1998, "Albert Wesker", "Cientifico", Atendido)]
+--atenderTurno 2001 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Cancelado)]
 --atenderTurno 5 [(1991, "Guybrush Threepwood", "Inspector", Pendiente)]
---atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente)]
+--atenderTurno 1 [(1991, "Guybrush Threepwood", "Inspector", Pendiente), (2001, "Roberto Martez", "Biologo", Pendiente)]
 --atenderTurno (-1) [(1991, "Guybrush Threepwood", "Inspector", Pendiente)]
 --atenderTurno 0 []
 
