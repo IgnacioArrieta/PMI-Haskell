@@ -58,3 +58,36 @@ cantidadEspecialidad esp_c list = foldr f 0 list
 --cantidadEspecialidad "Abogado" [(2342, "Phoenix Wright", "Abogado", Cancelado), (9283, "Apollo Justice", "Abogado", Pendiente)]
 
 --Funcion 4:
+atenderTurno :: Int -> [Turno] -> Either String [Turno]
+atenderTurno n _ | n < 0  = Left "No existe la posicion en la lista"
+atenderTurno _ [] = Left "No existe el turno"
+atenderTurno 0 ((num, pac, esp, est):xs)
+  |est == Pendiente = Right ((num, pac, esp, Atendido) : xs)
+  |est == Atendido = Left "El turno ya se Atendio"
+  |est == Cancelado = Left "El turno esta Cancelado"
+  |otherwise = Left "El turno tiene valores extraños"
+atenderTurno n (t : xs) = fmap (t :) (atenderTurno (n - 1) xs)
+
+--Funcion 5:
+foldArbol :: (a -> b -> b -> b) -> b -> Arbol a -> b
+foldArbol _ z Vacio = z
+foldArbol f z (Nodo x izq der)  = f x (foldArbol f z izq) (foldArbol f z der) 
+
+cantidadTotal :: Arbol Turno -> Int
+cantidadTotal a = foldArbol f 0 a
+  where
+    f _ i d = 1 + i + d 
+
+cantidadPendiente :: Arbol Turno -> Int
+cantidadPendiente a = foldArbol f 0 a 
+  where
+    f (_,_,_,est) i d = (if est == Pendiente then 1 else 0) + i + d 
+
+--Funcion 6:
+foldrTurnos :: [Turno] -> (Int, Int, Int)
+foldrTurnos lista = foldr f (0, 0, 0) lista 
+  where
+    f (num, pac, esp, est) (pen, ate, can)
+      |est == Pendiente = (pen+1,ate,can) 
+      |est == Atendido = (pen,ate+1,can)
+      |est == Cancelado = (pen,ate,can+1)
